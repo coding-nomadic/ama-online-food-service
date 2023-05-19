@@ -27,8 +27,10 @@ public class OrderService {
     private MessagePublisher messagePublisher;
 
     public OrderDtoResponse createOrders(OrderDto orderDto) {
-        orderDto.getItems().stream().map(s -> {
-            return itemRepository.findByName(s.getName()).orElseThrow(() -> new OrderServiceException("Item Id Not found : " + s.getName(), "102"));
+        orderDto.getItems().forEach(s -> {
+            if (!itemRepository.existsByName(s.getName())) {
+                throw new OrderServiceException("Item not found for " + s.getName(), "102");
+            }
         });
         Order order = orderRepository.save(modelMapper.map(orderDto, Order.class));
         OrderDtoResponse orderDtoResponse = GenericUtils.prepareOrderResponse(order, modelMapper);
