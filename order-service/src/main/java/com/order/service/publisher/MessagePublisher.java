@@ -5,7 +5,6 @@ import com.order.service.models.OrderDtoResponse;
 import com.order.service.utils.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.AmqpTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -14,11 +13,16 @@ import java.io.IOException;
 @Component
 @Slf4j
 public class MessagePublisher {
-    @Autowired
-    private AmqpTemplate amqpTemplate;
 
+    private AmqpTemplate amqpTemplate;
     @Value("${order.exchange.name}")
     String exchange;
+
+    public MessagePublisher(AmqpTemplate amqpTemplate) {
+        this.amqpTemplate = amqpTemplate;
+    }
+
+    /** publish message **/
     public void publishMessage(OrderDtoResponse orderDtoResponse) {
         amqpTemplate.convertAndSend(exchange, "", orderDtoResponse);
         try {
