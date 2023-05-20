@@ -1,6 +1,7 @@
 package com.order.service.controllers;
 
 
+import com.order.service.entities.Item;
 import com.order.service.models.ItemDto;
 import com.order.service.models.ItemDtoResponse;
 import com.order.service.services.ItemService;
@@ -14,9 +15,12 @@ import java.util.List;
 @RequestMapping(path = "/api/v1/items")
 public class ItemController {
 
-    @Autowired
+
     private ItemService itemService;
 
+    public ItemController(ItemService itemService){
+        this.itemService=itemService;
+    }
     @PostMapping
     public ResponseEntity<ItemDtoResponse> createItems(@RequestBody ItemDto itemDto) {
         return ResponseEntity.ok(itemService.createItems(itemDto));
