@@ -4,7 +4,6 @@ package com.order.service.controllers;
 import com.order.service.models.OrderDto;
 import com.order.service.models.OrderDtoResponse;
 import com.order.service.services.OrderService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,8 +18,12 @@ import javax.validation.Valid;
 @Validated
 public class OrderController {
 
-    @Autowired
+
     private OrderService orderService;
+
+    public OrderController(OrderService orderService) {
+        this.orderService = orderService;
+    }
 
     @PostMapping
     public ResponseEntity<OrderDtoResponse> createItems(@Valid @RequestBody OrderDto orderDto) {
