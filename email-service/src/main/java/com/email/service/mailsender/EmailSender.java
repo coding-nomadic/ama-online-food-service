@@ -27,7 +27,7 @@ public class EmailSender {
         try {
             List<Long> prices = orderDtoResponse.getItems().stream().map(s -> Long.valueOf(s.getPrice())).collect(Collectors.toList());
             Long totalPrices = prices.stream().collect(Collectors.summingLong(Long::intValue));
-            String emailText = "Thank you for ordering from Ama Food. Your order ID " + orderDtoResponse.getId() + " amounting $ " + totalPrices + "CAD will be delivered shortly !";
+            String emailText = "Thank you for ordering from Ama Food. Your order ID " + orderDtoResponse.getId() + " amounting $" + totalPrices + " CAD will be delivered shortly !";
             MimeMessage mimeMessage = getMimeMessage(emailText, orderDtoResponse);
             mailSender.send(mimeMessage);
             log.info("Email sent to the customer successfully !");
