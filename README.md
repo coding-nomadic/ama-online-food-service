@@ -23,7 +23,7 @@ This application uses a message-based architecture to enhance scalability, flexi
 - Java 11
 - Spring Boot
 - Spring Web MVC
-- Spring Aamqp for rabbit mq
+- Spring amqp for rabbit mq
 - Rabbit mq server
 - Spring Data JPA
 - Spring AOP
