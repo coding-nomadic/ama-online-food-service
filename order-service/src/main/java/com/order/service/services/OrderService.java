@@ -30,6 +30,7 @@ public class OrderService {
     }
 
     public OrderDtoResponse createOrders(OrderDto orderDto) {
+        orderDto.setStatus("accepted");
         orderDto.getItems().forEach(s -> {
             if (!itemRepository.existsByName(s.getName())) {
                 throw new OrderServiceException("Item not found for " + s.getName(), "102");
