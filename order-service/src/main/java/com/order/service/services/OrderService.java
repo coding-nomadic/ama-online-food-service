@@ -9,22 +9,25 @@ import com.order.service.repository.ItemRepository;
 import com.order.service.repository.OrderRepository;
 import com.order.service.utils.GenericUtils;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class OrderService {
 
-    @Autowired
+
     private ModelMapper modelMapper;
-    @Autowired
     private OrderRepository orderRepository;
 
-    @Autowired
     private ItemRepository itemRepository;
 
-    @Autowired
     private MessagePublisher messagePublisher;
+
+    public OrderService(MessagePublisher messagePublisher, ItemRepository itemRepository, OrderRepository orderRepository, ModelMapper modelMapper) {
+        this.itemRepository = itemRepository;
+        this.orderRepository = orderRepository;
+        this.modelMapper = modelMapper;
+        this.messagePublisher = messagePublisher;
+    }
 
     public OrderDtoResponse createOrders(OrderDto orderDto) {
         orderDto.getItems().forEach(s -> {
