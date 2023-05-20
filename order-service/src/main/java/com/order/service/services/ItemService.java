@@ -5,7 +5,6 @@ import com.order.service.models.ItemDto;
 import com.order.service.models.ItemDtoResponse;
 import com.order.service.repository.ItemRepository;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,11 +14,14 @@ import java.util.stream.StreamSupport;
 @Service
 public class ItemService {
 
-    @Autowired
     private ItemRepository itemRepository;
 
-    @Autowired
     private ModelMapper modelMapper;
+
+    public ItemService(ItemRepository itemRepository, ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
+        this.itemRepository = itemRepository;
+    }
 
     public ItemDtoResponse createItems(ItemDto itemDto) {
         Item itemResponse = itemRepository.save(modelMapper.map(itemDto, Item.class));
