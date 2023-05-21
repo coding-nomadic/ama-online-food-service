@@ -13,56 +13,69 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitMqConfiguration {
-
+    @Value("${order.dlq.queue}")
+    String orderDlq;
     @Value("${order.first.queue}")
     String firstQueue;
-
     @Value("${order.second.queue}")
     String secondQueue;
-
     @Value("${order.exchange.name}")
     String exchange;
 
+    @Value("${order.exchange.dlq}")
+    String dlqExchange;
     @Value("${rabbit.mq.host}")
     String host;
     @Value("${rabbit.mq.port}")
     int port;
-
     @Value("${rabbit.mq.user}")
     String userName;
     @Value("${rabbit.mq.password}")
     String passWord;
 
     @Bean
-    Queue orderConfirmationQueue() {
-        return new Queue(firstQueue, false);
+    DirectExchange deadLetterExchange() {
+        return new DirectExchange(dlqExchange);
     }
 
     @Bean
-    Queue orderProcess() {
-        return new Queue(secondQueue, false);
+    DirectExchange exchange() {
+        return new DirectExchange(exchange);
     }
 
     @Bean
-    FanoutExchange exchange() {
-        return new FanoutExchange(exchange);
+    Queue dlq() {
+        return QueueBuilder.durable(orderDlq).build();
     }
 
     @Bean
-    Binding orderConfirmationBinding(Queue orderConfirmationQueue, FanoutExchange exchange) {
-        return BindingBuilder.bind(orderConfirmationQueue).to(exchange);
+    Queue secondQueue() {
+        return QueueBuilder.durable(secondQueue).withArgument("x-dead-letter-exchange", dlqExchange).withArgument("x-dead-letter-routing-key", "deadLetter").build();
     }
 
     @Bean
-    Binding orderProcessBinding(Queue orderProcess, FanoutExchange exchange) {
-        return BindingBuilder.bind(orderProcess).to(exchange);
+    Queue firstQueue() {
+        return QueueBuilder.durable(firstQueue).withArgument("x-dead-letter-exchange", dlqExchange).withArgument("x-dead-letter-routing-key", "deadLetter").build();
+    }
+
+    @Bean
+    Binding DLQbinding() {
+        return BindingBuilder.bind(dlq()).to(deadLetterExchange()).with("deadLetter");
+    }
+
+    @Bean
+    Binding bindingSecond() {
+        return BindingBuilder.bind(secondQueue()).to(exchange()).with(secondQueue);
+    }
+    @Bean
+    Binding bindingFirst() {
+        return BindingBuilder.bind(firstQueue()).to(exchange()).with(firstQueue);
     }
 
     @Bean
     public Jackson2JsonMessageConverter jsonMessageConverter() {
         return new Jackson2JsonMessageConverter();
     }
-
 
     @Bean
     public AmqpTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
@@ -73,7 +86,7 @@ public class RabbitMqConfiguration {
 
     @Bean
     public ConnectionFactory connectionFactory() {
-        CachingConnectionFactory connectionFactory = new CachingConnectionFactory(host,port);
+        CachingConnectionFactory connectionFactory = new CachingConnectionFactory(host, port);
         connectionFactory.setUsername(userName);
         connectionFactory.setPassword(passWord);
         return connectionFactory;
