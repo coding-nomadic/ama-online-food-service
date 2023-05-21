@@ -13,8 +13,8 @@ This application uses a message-based architecture to enhance scalability, flexi
 
 ## Features in this application- 
 
-- Ama food owner can create menus and save it.
-- Customer orders food
+- Restaurant owner can create menu and save it.
+- Customer orders food from the application
 - Gets notification to restaurants
 - Email confirmation on orders
 
