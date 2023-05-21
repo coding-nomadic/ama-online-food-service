@@ -9,7 +9,7 @@ This application uses a message-based architecture to enhance scalability, flexi
 
 ## High Level Design 
 
-![image](https://github.com/coding-nomadic/Ama-Food-Delivery/assets/8009104/cdfe86f1-3c3c-4fcc-a208-f17aeb8ddff0)
+![image](https://github.com/coding-nomadic/ama-online-food-service/assets/8009104/a6164f52-e72a-4d9e-8a49-c1538b6f9540)
 
 ## Features in this application- 
 
