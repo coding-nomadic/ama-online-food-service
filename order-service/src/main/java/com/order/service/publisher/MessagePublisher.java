@@ -24,10 +24,11 @@ public class MessagePublisher {
 
     /** publish message **/
     public void publishMessage(OrderDtoResponse orderDtoResponse) {
-        amqpTemplate.convertAndSend(exchange, "", orderDtoResponse);
         try {
-            log.info("Message sent successfully to Exchange with {}", JsonUtils.toString(orderDtoResponse));
-        } catch (IOException exception) {
+            amqpTemplate.convertAndSend(exchange, "order-confirmation", orderDtoResponse);
+            amqpTemplate.convertAndSend(exchange, "order-process", orderDtoResponse);
+            log.info("Message sent successfully to Order Process and Order Confirmation Queues {}", JsonUtils.toString(orderDtoResponse));
+        } catch (Exception exception) {
             log.error("Error occurred while converting to JSON String {}", exception.getLocalizedMessage());
             throw new OrderServiceException(exception.getLocalizedMessage(), "102");
         }
