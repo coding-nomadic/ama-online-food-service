@@ -17,7 +17,7 @@ This application uses a message-based architecture to enhance scalability, flexi
 - Customer orders food from the application
 - Gets notification to restaurants
 - Email confirmation on orders
-- Retry mechanism for Error Handlings
+- Retry mechanism for Error Handling using dead-letter queue.
 
 ## Tools and Technologies
 
