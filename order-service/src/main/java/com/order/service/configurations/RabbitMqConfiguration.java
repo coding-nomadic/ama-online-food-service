@@ -33,13 +33,15 @@ public class RabbitMqConfiguration {
     @Value("${rabbit.mq.password}")
     String passWord;
 
+    private static final String DEAD_LETTER = "deadLetter";
+
     @Bean
     DirectExchange deadLetterExchange() {
         return new DirectExchange(dlqExchange);
     }
 
     @Bean
-    DirectExchange exchange() {
+    DirectExchange orderExchange() {
         return new DirectExchange(exchange);
     }
 
@@ -49,27 +51,28 @@ public class RabbitMqConfiguration {
     }
 
     @Bean
-    Queue secondQueue() {
-        return QueueBuilder.durable(secondQueue).withArgument("x-dead-letter-exchange", dlqExchange).withArgument("x-dead-letter-routing-key", "deadLetter").build();
+    Queue processQueue() {
+        return QueueBuilder.durable(secondQueue).withArgument("x-dead-letter-exchange", dlqExchange).withArgument("x-dead-letter-routing-key", DEAD_LETTER).build();
     }
 
     @Bean
-    Queue firstQueue() {
-        return QueueBuilder.durable(firstQueue).withArgument("x-dead-letter-exchange", dlqExchange).withArgument("x-dead-letter-routing-key", "deadLetter").build();
+    Queue confirmationQueue() {
+        return QueueBuilder.durable(firstQueue).withArgument("x-dead-letter-exchange", dlqExchange).withArgument("x-dead-letter-routing-key", DEAD_LETTER).build();
     }
 
     @Bean
     Binding DLQbinding() {
-        return BindingBuilder.bind(dlq()).to(deadLetterExchange()).with("deadLetter");
+        return BindingBuilder.bind(dlq()).to(deadLetterExchange()).with(DEAD_LETTER);
     }
 
     @Bean
     Binding bindingSecond() {
-        return BindingBuilder.bind(secondQueue()).to(exchange()).with(secondQueue);
+        return BindingBuilder.bind(processQueue()).to(orderExchange()).with(secondQueue);
     }
+
     @Bean
     Binding bindingFirst() {
-        return BindingBuilder.bind(firstQueue()).to(exchange()).with(firstQueue);
+        return BindingBuilder.bind(confirmationQueue()).to(orderExchange()).with(firstQueue);
     }
 
     @Bean
