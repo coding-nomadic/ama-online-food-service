@@ -14,7 +14,7 @@ public class RestaurantService {
     private OrderRepository orderRepository;
     private ModelMapper modelMapper;
 
-    private final static String DELIVERED = "delivered";
+    private static final String DELIVERED = "delivered";
 
     public RestaurantService(OrderRepository orderRepository, ModelMapper modelMapper) {
         this.orderRepository = orderRepository;
