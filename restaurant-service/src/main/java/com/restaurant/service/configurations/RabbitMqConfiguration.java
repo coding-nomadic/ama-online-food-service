@@ -1,7 +1,6 @@
 package com.restaurant.service.configurations;
 
 import org.springframework.amqp.core.AmqpTemplate;
-import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
