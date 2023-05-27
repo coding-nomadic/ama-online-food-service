@@ -49,7 +49,7 @@ public class LoggingAspect {
         }
     }
 
-    private Map<String, Object> getParameters(JoinPoint joinPoint) {
+    public Map<String, Object> getParameters(JoinPoint joinPoint) {
         CodeSignature signature = (CodeSignature) joinPoint.getSignature();
         HashMap<String, Object> map = new HashMap<>();
         String[] parameterNames = signature.getParameterNames();
