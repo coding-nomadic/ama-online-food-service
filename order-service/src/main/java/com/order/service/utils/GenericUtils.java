@@ -10,6 +10,9 @@ import java.util.stream.Collectors;
 
 public class GenericUtils {
 
+    private  GenericUtils(){
+
+    }
 
     /** Order Response **/
     public static OrderDtoResponse prepareOrderResponse(Order order, ModelMapper modelMapper) {
