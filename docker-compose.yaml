@@ -7,9 +7,9 @@ services:
   order-service:  # node application
     restart: always # automatically restart if the app fails
     build: ./order-service # build the image from the dockerfile present in the order-service directory
-    image: tendawa123/sorder-service:0.0.1
+    image: tendawa123/order-service:0.0.1
     depends_on:
-      - mongo
+      - postgresql
       - rabbitmq
     environment: # environment variables
       - PORT=3000
@@ -21,8 +21,8 @@ services:
   
   restaurant-service:  # node application
     restart: always # automatically restart if the app fails
-    build: ./restaurant-service # build the image from the dockerfile present in the restaurant-service directory
-    image: dhanushkamath/burgernaut-restaurant-service:1.0.0
+    build: ./restaurant-service # build the image from the dockerfile present in the restaurant-service directorries
+    image: tendawa123/restaurant-service:0.0.1
     depends_on:
       - mongo
       - rabbitmq
@@ -35,18 +35,15 @@ services:
   email-service:  # node application
     restart: always # automatically restart if the app fails
     build: ./email-service # build the image from the dockerfile present in the restaurant-service directory
-    image: dhanushkamath/burgernaut-email-service:1.0.0
+    image: tendawa123/email-service:1.0.0
     depends_on:
       - rabbitmq
     environment: # environment variables
       - MQ_HOST=rabbitmq
       - PREFETCH_COUNT=3 # Max orders that can be processed simultaneously
-      - EMAIL_ID=test@gmail.com # Enter email of service account
-      - EMAIL_PWD=test1234 # Enter password of service account
-      - EMAIL_SERVICE=gmail # Enter email service 
       - SLEEP_TIME=20000
   
-  mongo: # database
+  postgresql: # database
     image: mongo:4.2 # pull the mongo image from docker hub
     logging: 
       driver: none # disable logging
