@@ -6,6 +6,7 @@ import com.order.service.models.MenuDto;
 import com.order.service.models.MenuDtoResponse;
 import com.order.service.repository.MenuRepository;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class MenuService {
 
     private ModelMapper modelMapper;
 
+    @Autowired
     public MenuService(MenuRepository menuRepository, ModelMapper modelMapper) {
         this.modelMapper = modelMapper;
         this.menuRepository = menuRepository;
