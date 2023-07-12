@@ -1,46 +1,49 @@
 package com.order.service.services;
 
-import com.order.service.entities.Order;
-import com.order.service.exceptions.OrderServiceException;
-import com.order.service.models.OrderDto;
-import com.order.service.models.OrderDtoResponse;
-import com.order.service.publisher.MessagePublisher;
+
+import com.order.service.entities.Menu;
+import com.order.service.exceptions.ResourceNotFoundException;
+import com.order.service.models.MenuDto;
+import com.order.service.models.MenuDtoResponse;
 import com.order.service.repository.MenuRepository;
-import com.order.service.repository.OrderRepository;
-import com.order.service.utils.GenericUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-@Service
-public class OrderService {
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
+@Service
+public class MenuService {
+
+    private MenuRepository menuRepository;
 
     private ModelMapper modelMapper;
-    private OrderRepository orderRepository;
-
-    private MenuRepository itemRepository;
-
-    private MessagePublisher messagePublisher;
 
     @Autowired
-    public OrderService(MessagePublisher messagePublisher, MenuRepository itemRepository, OrderRepository orderRepository, ModelMapper modelMapper) {
-        this.itemRepository = itemRepository;
-        this.orderRepository = orderRepository;
+    public MenuService(MenuRepository menuRepository, ModelMapper modelMapper) {
         this.modelMapper = modelMapper;
-        this.messagePublisher = messagePublisher;
+        this.menuRepository = menuRepository;
     }
 
-    public OrderDtoResponse createOrders(OrderDto orderDto) {
-        orderDto.setStatus("accepted");
-        orderDto.getItems().forEach(s -> {
-            if (!itemRepository.existsByName(s.getName())) {
-                throw new OrderServiceException("Item not found for " + s.getName(), "102");
-            }
-        });
-        Order order = orderRepository.save(modelMapper.map(orderDto, Order.class));
-        OrderDtoResponse orderDtoResponse = GenericUtils.orderResponse(order, modelMapper);
-        messagePublisher.publishMessage(orderDtoResponse);
-        return orderDtoResponse;
+    public MenuDtoResponse createMenu(MenuDto menuDto) {
+        Menu itemResponse = menuRepository.save(modelMapper.map(menuDto, Menu.class));
+        return modelMapper.map(itemResponse, MenuDtoResponse.class);
+    }
+
+    public List<MenuDtoResponse> fetchMenus() {
+        final Iterable<Menu> items = menuRepository.findAll();
+        return StreamSupport.stream(items.spliterator(), false).map(m -> modelMapper.map(m, MenuDtoResponse.class)).collect(Collectors.toList());
+    }
+
+    public MenuDtoResponse fetchMenu(String id) {
+        final Optional<Menu> items = menuRepository.findById(Long.valueOf(id));
+        if (items.isPresent()) {
+            return modelMapper.map(items.get(), MenuDtoResponse.class);
+        } else {
+            throw new ResourceNotFoundException("Menu not found for this id : " + id, "102");
+        }
     }
 }
