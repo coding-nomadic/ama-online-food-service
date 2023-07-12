@@ -18,7 +18,13 @@ public class GenericUtils {
      * Order Response
      **/
     public static OrderDtoResponse orderResponse(Order order, ModelMapper modelMapper) {
+        OrderDtoResponse orderDtoResponse = new OrderDtoResponse();
+        orderDtoResponse.setCreatedAt(order.getCreatedAt());
+        orderDtoResponse.setId(order.getId());
+        orderDtoResponse.setEmail(order.getEmail());
+        orderDtoResponse.setStatus(order.getStatus());
         List<ItemDtoResponse> items = order.getItems().stream().map(m -> modelMapper.map(m, ItemDtoResponse.class)).collect(Collectors.toList());
-        return OrderDtoResponse.builder().id(order.getId()).email(order.getEmail()).status(order.getStatus()).createdAt(order.getCreatedAt()).items(items).build();
+        orderDtoResponse.setItems(items);
+        return orderDtoResponse;
     }
 }
