@@ -28,6 +28,11 @@ public class MenuController {
 
     @GetMapping
     public ResponseEntity<List<MenuDtoResponse>> fetchMenus() {
-        return ResponseEntity.ok(menuService.fetchMenu());
+        return ResponseEntity.ok(menuService.fetchMenus());
+    }
+
+    @GetMapping(path = "/{id}")
+    public ResponseEntity<MenuDtoResponse> fetchById(@PathVariable String id) {
+        return ResponseEntity.ok(menuService.fetchMenu(id));
     }
 }
