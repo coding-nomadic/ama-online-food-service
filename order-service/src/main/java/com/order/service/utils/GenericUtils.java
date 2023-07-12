@@ -10,19 +10,15 @@ import java.util.stream.Collectors;
 
 public class GenericUtils {
 
-    private  GenericUtils(){
+    private GenericUtils() {
 
     }
 
-    /** Order Response **/
-    public static OrderDtoResponse prepareOrderResponse(Order order, ModelMapper modelMapper) {
-        OrderDtoResponse orderDtoResponse = new OrderDtoResponse();
-        orderDtoResponse.setCreatedAt(order.getCreatedAt());
-        orderDtoResponse.setId(order.getId());
-        orderDtoResponse.setEmail(order.getEmail());
-        orderDtoResponse.setStatus(order.getStatus());
+    /**
+     * Order Response
+     **/
+    public static OrderDtoResponse orderResponse(Order order, ModelMapper modelMapper) {
         List<ItemDtoResponse> items = order.getItems().stream().map(m -> modelMapper.map(m, ItemDtoResponse.class)).collect(Collectors.toList());
-        orderDtoResponse.setItems(items);
-        return orderDtoResponse;
+        return OrderDtoResponse.builder().id(order.getId()).email(order.getEmail()).status(order.getStatus()).createdAt(order.getCreatedAt()).items(items).build();
     }
 }
