@@ -1,6 +1,8 @@
 package com.order.service.entities;
 
+import lombok.Builder;
 import lombok.Data;
+
 import javax.persistence.*;
 import java.sql.Date;
 import java.util.List;
@@ -11,19 +13,12 @@ import java.util.List;
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
     private Long id;
-
-    @Column(name = "status", nullable = false)
     private String status;
-
-    @Column(name = "email", nullable = false)
     private String email;
-
-    @Column(name = "createdAt", nullable = false)
     private Date createdAt;
-
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Item> items;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "order_id", referencedColumnName = "id")
+    private List<Menu> items;
 
 }
