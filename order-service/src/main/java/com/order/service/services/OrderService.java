@@ -4,6 +4,7 @@ import com.order.service.entities.Order;
 import com.order.service.exceptions.OrderServiceException;
 import com.order.service.models.OrderDto;
 import com.order.service.models.OrderDtoResponse;
+import com.order.service.models.OrderStatus;
 import com.order.service.publisher.MessagePublisher;
 import com.order.service.repository.MenuRepository;
 import com.order.service.repository.OrderRepository;
@@ -43,7 +44,7 @@ public class OrderService {
         });
         Order order = new Order();
         order.setCreatedAt(new java.sql.Date(System.currentTimeMillis()));
-        order.setStatus(orderDto.getStatus());
+        order.setStatus(OrderStatus.accepted.name());
         order.setEmail(orderDto.getEmail());
         order.setItems(orderDto.getItems());
         OrderDtoResponse orderDtoResponse = GenericUtils.orderResponse(orderRepository.save(order), modelMapper);
@@ -54,7 +55,6 @@ public class OrderService {
     public List<OrderDtoResponse> getAllOrders() {
         return orderRepository.findAll().stream().map(m -> modelMapper.map(m, OrderDtoResponse.class)).collect(Collectors.toList());
     }
-
 
     public OrderDtoResponse getOrderById(String id) {
         Optional<Order> order = orderRepository.findById(Long.valueOf(id));
