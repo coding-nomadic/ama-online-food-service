@@ -37,7 +37,7 @@ public class MenuController {
         return ResponseEntity.ok(menuService.fetchMenu(id));
     }
 
-    @GetMapping(path = "/{id}")
+    @DeleteMapping(path = "/{id}")
     public ResponseEntity<Void> deleteById(@PathVariable String id) {
         menuService.deleteMenu(id);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
