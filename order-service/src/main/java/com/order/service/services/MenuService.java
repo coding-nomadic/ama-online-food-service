@@ -46,4 +46,13 @@ public class MenuService {
             throw new ResourceNotFoundException("Menu not found for this id : " + id, "102");
         }
     }
+
+    public void deleteMenu(String id) {
+        final Optional<Menu> items = menuRepository.findById(Long.valueOf(id));
+        if (items.isPresent()) {
+            menuRepository.deleteById(Long.valueOf(id));
+        } else {
+            throw new ResourceNotFoundException("Menu not found for this id : " + id, "102");
+        }
+    }
 }
