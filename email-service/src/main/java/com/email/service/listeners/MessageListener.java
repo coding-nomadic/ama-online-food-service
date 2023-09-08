@@ -1,18 +1,8 @@
-package com.email.service.listeners;
-
-import com.email.service.mailsender.EmailSender;
-import com.email.service.models.OrderDtoResponse;
-import com.email.service.utils.JsonUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.AmqpRejectAndDontRequeueException;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.stereotype.Component;
-
 @Component
 @Slf4j
 public class MessageListener {
 
-    private EmailSender emailSender;
+    private final EmailSender emailSender;
 
     public MessageListener(EmailSender emailSender) {
         this.emailSender = emailSender;
@@ -21,11 +11,23 @@ public class MessageListener {
     @RabbitListener(queues = "${order.second.queue}")
     public void receiveMessage(OrderDtoResponse orderDtoResponse) {
         try {
-            log.info("Incoming Message from the order confirmation queue : {}", JsonUtils.toString(orderDtoResponse));
-            emailSender.sendMail(orderDtoResponse);
+            logIncomingMessage(orderDtoResponse);
+            sendEmail(orderDtoResponse);
         } catch (Exception exception) {
-            log.error("Error occurred {}", exception.getLocalizedMessage());
-            throw new AmqpRejectAndDontRequeueException("Exception occurred in Message Listener");
+            handleException(exception);
         }
+    }
+
+    private void logIncomingMessage(OrderDtoResponse orderDtoResponse) {
+        log.info("Incoming Message from the order confirmation queue: {}", JsonUtils.toString(orderDtoResponse));
+    }
+
+    private void sendEmail(OrderDtoResponse orderDtoResponse) {
+        emailSender.sendMail(orderDtoResponse);
+    }
+
+    private void handleException(Exception exception) {
+        log.error("Error occurred: {}", exception.getMessage(), exception);
+        throw new AmqpRejectAndDontRequeueException("Exception occurred in Message Listener", exception);
     }
 }
