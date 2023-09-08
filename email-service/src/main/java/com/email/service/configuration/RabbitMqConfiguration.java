@@ -1,32 +1,27 @@
-package com.email.service.configuration;
-
-import org.springframework.amqp.core.AmqpTemplate;
-import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
-import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
 @Configuration
 public class RabbitMqConfiguration {
 
-    @Value("${rabbit.mq.host}")
-    String host;
-    @Value("${rabbit.mq.port}")
-    int port;
-    @Value("${rabbit.mq.user}")
-    String userName;
-    @Value("${rabbit.mq.password}")
-    String passWord;
+    private final String host;
+    private final int port;
+    private final String userName;
+    private final String passWord;
 
+    public RabbitMqConfiguration(
+            @Value("${rabbit.mq.host}") String host,
+            @Value("${rabbit.mq.port}") int port,
+            @Value("${rabbit.mq.user}") String userName,
+            @Value("${rabbit.mq.password}") String passWord
+    ) {
+        this.host = host;
+        this.port = port;
+        this.userName = userName;
+        this.passWord = passWord;
+    }
 
     @Bean
     public Jackson2JsonMessageConverter jsonMessageConverter() {
         return new Jackson2JsonMessageConverter();
     }
-
 
     @Bean
     public AmqpTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
