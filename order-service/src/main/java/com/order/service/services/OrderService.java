@@ -10,7 +10,6 @@ import com.order.service.repository.MenuRepository;
 import com.order.service.repository.OrderRepository;
 import com.order.service.utils.GenericUtils;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,15 +19,11 @@ import java.util.stream.Collectors;
 @Service
 public class OrderService {
 
+    private final ModelMapper modelMapper;
+    private final OrderRepository orderRepository;
+    private final MenuRepository itemRepository;
+    private final MessagePublisher messagePublisher;
 
-    private ModelMapper modelMapper;
-    private OrderRepository orderRepository;
-
-    private MenuRepository itemRepository;
-
-    private MessagePublisher messagePublisher;
-
-    @Autowired
     public OrderService(MessagePublisher messagePublisher, MenuRepository itemRepository, OrderRepository orderRepository, ModelMapper modelMapper) {
         this.itemRepository = itemRepository;
         this.orderRepository = orderRepository;
@@ -36,32 +31,40 @@ public class OrderService {
         this.messagePublisher = messagePublisher;
     }
 
-    public OrderDtoResponse createOrders(OrderDto orderDto) {
-        orderDto.getItems().forEach(s -> {
-            if (!itemRepository.existsByName(s.getName())) {
-                throw new OrderServiceException("Menu not found for " + s.getName(), "102");
-            }
-        });
+    public OrderDtoResponse createOrder(OrderDto orderDto) {
+        validateMenuItemsExist(orderDto.getItems());
+
         Order order = new Order();
         order.setCreatedAt(new java.sql.Date(System.currentTimeMillis()));
-        order.setStatus(OrderStatus.accepted.name());
+        order.setStatus(OrderStatus.ACCEPTED.name());
         order.setEmail(orderDto.getEmail());
         order.setItems(orderDto.getItems());
-        OrderDtoResponse orderDtoResponse = GenericUtils.orderResponse(orderRepository.save(order), modelMapper);
+
+        Order savedOrder = orderRepository.save(order);
+        OrderDtoResponse orderDtoResponse = GenericUtils.orderResponse(savedOrder, modelMapper);
         messagePublisher.publishMessage(orderDtoResponse);
+
         return orderDtoResponse;
     }
 
     public List<OrderDtoResponse> getAllOrders() {
-        return orderRepository.findAll().stream().map(m -> modelMapper.map(m, OrderDtoResponse.class)).collect(Collectors.toList());
+        return orderRepository.findAll()
+                .stream()
+                .map(order -> modelMapper.map(order, OrderDtoResponse.class))
+                .collect(Collectors.toList());
     }
 
     public OrderDtoResponse getOrderById(String id) {
         Optional<Order> order = orderRepository.findById(Long.valueOf(id));
-        if (order.isPresent()) {
-            return modelMapper.map(order.get(), OrderDtoResponse.class);
-        } else {
-            throw new OrderServiceException("Order not found for " + id, "102");
+        return order.map(value -> modelMapper.map(value, OrderDtoResponse.class))
+                .orElseThrow(() -> new OrderServiceException("Order not found for " + id, "102"));
+    }
+
+    private void validateMenuItemsExist(List<OrderItem> items) {
+        for (OrderItem item : items) {
+            if (!itemRepository.existsByName(item.getName())) {
+                throw new OrderServiceException("Menu not found for " + item.getName(), "102");
+            }
         }
     }
 }
