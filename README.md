@@ -24,8 +24,8 @@ This application uses a message-based architecture to enhance scalability, flexi
 - Java 11
 - Spring Boot
 - Spring Web MVC
-- Spring amqp for rabbit mq
-- Rabbit mq server
+- Spring Kafka
+- Kafka Server
 - Spring Data JPA
 - Spring AOP
 - Spring Mail
