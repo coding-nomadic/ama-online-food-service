@@ -27,9 +27,6 @@ public class MessagePublisher {
     /** publish message **/
     public void publishMessage(Order order) {
         try {
-            //amqpTemplate.convertAndSend(exchange, "order-confirmation", orderDtoResponse);
-            //amqpTemplate.convertAndSend(exchange, "order-process", orderDtoResponse);
-            kafkaTemplate.send(orderConfirmationTopic, JsonUtils.toString(order));
             kafkaTemplate.send(orderConfirmationTopic, JsonUtils.toString(order));
             log.info("Message sent successfully to Order Process and Order Confirmation Queues {}", JsonUtils.toString(order));
         } catch (Exception exception) {
